@@ -1,0 +1,144 @@
+/* TaskC Styles */
+:root {
+  --bg: #fff;
+  --text: #333;
+  --border: #e5e5e5;
+  --accent: #0ea5e9;
+  --accent-bg: #f0f9ff;
+  --err: #ef4444;
+  --err-bg: #fef2f2;
+  --shadow: 0 4px 6px -1px rgba(0, 0,0,0.1);
+}
+
+* { box-sizing: border-box; }
+
+body { 
+  font-family: system-ui, sans-serif; 
+  margin: 0; 
+  padding: 2rem; 
+  background: var(--bg); 
+  color: var(--text); 
+  line-height: 1.6; 
+}
+
+.layout {
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 768px) { 
+  .layout { 
+    grid-template-columns: 1fr; 
+    gap: 1.5rem; 
+    padding: 1rem; 
+  } 
+}
+
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.card:hover { 
+  box-shadow: 0 8px 25px -1px rgba(0,0,0,0.1); 
+}
+
+
+
+h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+input:focus { 
+  outline: none; 
+  border-color: var(--accent); 
+  box-shadow: 0 0 0 3px var(--accent-bg); 
+}
+
+input.err {
+  border-color: var(--err);
+  background: var(--err-bg);
+}
+
+.field-err {
+  color: var(--err);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 1rem 0;
+  font-weight: 500;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.submit-btn:hover { 
+  background: #0284c7; 
+}
+
+.badge {
+  background: var(--accent);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin: 2rem 0;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  background: #fafafa;
+}
+
+.user-name { 
+  font-weight: 600; 
+  margin: 0; 
+}
+.user-age { 
+  color: #666; 
+  margin: 0; 
+}

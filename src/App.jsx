@@ -1,65 +1,79 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react'
 import './App.css';
 
-const MAX = 30;
+export default function TaskA() {
+  const [input, setValue] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState("");
 
-function getStatus(count) {
-  if (count < 10) return { label: "Too short", cls: "status-short" };
-  if (count <= 20) return { label: "Good", cls: "status-good" };
-  return { label: "Too long", cls: "status-long" };
-}
-
-function getBarColor(count) {
-  if (count < 10) return "#e05c5c";
-  if (count <= 20) return "#3db37c";
-  return "#e09a1a";
-}
-
-export default function App() {
-  const [text, setText] = useState("");
-  const [status, setStatus] = useState({ label: "Too short", cls: "status-short" });
-
-  useEffect(() => {
-    setStatus(getStatus(text.length));
-  }, [text]);
-
-  const handleChange = (e) => {
-    if (e.target.value.length <= MAX) {
-      setText(e.target.value);
-    }
+  const validate = (val) => {
+    if (val.trim() === "") return "Task cannot be empty.";
+    if (val.trim().length < 3) return "Task must be at least 3 characters.";
+    return "";
   };
 
-  const pct = Math.min((text.length / MAX) * 100, 100);
+  const isInvalid = validate(input) !== "";
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
+    setError("");
+  };
+
+  const handleAdd = () => {
+    const err = validate(input);
+    if (err) { setError(err); return; }
+    setTasks([...tasks, { id: Date.now(), text: input.trim() }]);
+    setValue("");
+    setError("");
+  };
+
+  const handleDelete = (id) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !isInvalid) handleAdd();
+  };
 
   return (
-    <div className="app">
-      <h1>Character Counter</h1>
+    <>
+      <div className="app">
+        <h1>To-Do List</h1>
+        <p className="subtitle">Task A — State + Validation</p>
 
-      <textarea
-        value={text}
-        onChange={handleChange}
-        placeholder="Start typing here..."
-      />
+        <div className="input-row">
+          <input
+            value={input}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter a task..."
+            className={error ? "error-input" : ""}
+          />
+          <button className="add-btn" onClick={handleAdd} disabled={isInvalid}>
+            Add
+          </button>
+        </div>
 
-      <div className="meta">
-        <span
-          className="counter-pill"
-          style={{ color: getBarColor(text.length) }}
-        >
-          {text.length}
-        </span>
-        <span className={`status-badge ${status.cls}`}>{status.label}</span>
+        <p className="error-msg">{error}</p>
+
+        <p className="count">
+          Total tasks: <span>{tasks.length}</span>
+        </p>
+
+        <ul>
+          {tasks.length === 0 && (
+            <p className="empty">No tasks yet. Add one above.</p>
+          )}
+          {tasks.map((t) => (
+            <li key={t.id}>
+              <span className="task-text">{t.text}</span>
+              <button className="del-btn" onClick={() => handleDelete(t.id)}>
+                delete
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-
-      <div className="bar-track">
-        <div
-          className="bar-fill"
-          style={{ width: `${pct}%`, background: getBarColor(text.length) }}
-        />
-      </div>
-
-      <p className="hint">{text.length} / {MAX} chars max</p>
-    </div>
+    </>
   );
 }
-

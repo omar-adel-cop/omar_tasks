@@ -1,91 +1,78 @@
 import { useState } from 'react'
-import './App.css'
+import './App.css';
 
-function UserForm({ onSubmit }) {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [errors, setErrors] = useState({});
+export default function TaskA() {
+  const [input, setValue] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState("");
 
-  const validate = () => {
-    const e = {};
-    if (!name.trim()) e.name = "Name is required.";
-    const ageNum = Number(age);
-    if (!age || isNaN(ageNum) || ageNum <= 18)
-      e.age = "Age must be a number greater than 18.";
-    return e;
+  const validate = (val) => {
+    if (val.trim() === "") return "Task cannot be empty.";
+    if (val.trim().length < 3) return "Task must be at least 3 characters.";
+    return "";
   };
 
-  const handleSubmit = () => {
-    const e = validate();
-    if (Object.keys(e).length > 0) { setErrors(e); return; }
-    onSubmit({ name: name.trim(), age: Number(age) });
-    setName("");
-    setAge("");
-    setErrors({});
+  const isInvalid = validate(input) !== "";
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
+    setError("");
   };
 
-  return (
-    <div className="card form-card">
-      <h2>Add User</h2>
-      
+  const handleAdd = () => {
+    const err = validate(input);
+    if (err) { setError(err); return; }
+    setTasks([...tasks, { id: Date.now(), text: input.trim() }]);
+    setValue("");
+    setError("");
+  };
 
-      <label>Full Name</label>
-      <input
-        value={name}
-        onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: "" })); }}
-        placeholder="e.g. Sara Ahmed"
-        className={errors.name ? "err" : ""}
-      />
-      <p className="field-err">{errors.name}</p>
+  const handleDelete = (id) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+  };
 
-      <label>Age</label>
-      <input
-        value={age}
-        onChange={(e) => { setAge(e.target.value); setErrors((p) => ({ ...p, age: "" })); }}
-        placeholder="Must be > 18"
-        type="number"
-        className={errors.age ? "err" : ""}
-      />
-      <p className="field-err">{errors.age}</p>
-
-      <button className="submit-btn" onClick={handleSubmit}>
-        Submit →
-      </button>
-    </div>
-  );
-}
-
-// ── Parent Component ─────────────────────────────────
-export default function TaskC() {
-  const [users, setUsers] = useState([]);
-
-  const handleNewUser = (user) => {
-    setUsers((prev) => [...prev, { ...user, id: Date.now() }]);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !isInvalid) handleAdd();
   };
 
   return (
     <>
-      <div className="layout">
-        <UserForm onSubmit={handleNewUser} />
+      <div className="app">
+        <h1>To-Do List</h1>
+        <p className="subtitle">Task A — State + Validation</p>
 
-        <div className="card list-card">
-          <h2>
-            Users
-            {users.length > 0 && <span className="badge">{users.length}</span>}
-          </h2>
-          <p className="sub">Submitted list</p>
-
-          {users.length === 0 ? (
-            <p className="empty-state">No users yet.</p>
-          ) : (
-            users.map((u) => (
-              <div className="user-item" key={u.id}>
-                <p className="user-name">{u.name}</p>
-                <p className="user-age">Age: {u.age}</p>
-              </div>
-            ))
-          )}
+        <div className="input-row">
+          <input
+            value={input}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter a task..."
+            className={error ? "error-input" : ""}
+          />
+          <button className="add-btn" onClick={handleAdd} disabled={isInvalid}>
+            Add
+          </button>
         </div>
+
+        <p className="error-msg">{error}</p>
+
+        <p className="count">
+          Total tasks: <span>{tasks.length}</span>
+        </p>
+
+        <ul>
+          {tasks.length === 0 && (
+            <p className="empty">No tasks yet. Add one above.</p>
+          )}
+          {tasks.map((t) => (
+            <li key={t.id}>
+              <span className="task-text">{t.text}</span>
+              <button className="del-btn" onClick={() => handleDelete(t.id)}>
+                delete
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </>
   );
